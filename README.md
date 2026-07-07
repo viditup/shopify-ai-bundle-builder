@@ -161,3 +161,6 @@ Add a single product from the bundle → cart updates, toast confirms.
 Add the entire bundle → all items added in one cart request.
 Theme editor → change section title / recommendation count / fallback collection live.
 Quick code walkthrough: `sections/ai-recommended-bundle.liquid` → `ai-bundle.js` → `server/controllers/aiController.js` → `shopifyService.js` matching logic.
+
+<img width="1341" height="587" alt="image" src="https://github.com/user-attachments/assets/2a8a366d-e95e-422a-929f-6e3e4c7ac939" />
+
