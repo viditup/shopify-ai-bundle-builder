@@ -1,166 +1,391 @@
-🚀 Shopify AI Bundle Builder
-An AI-powered "Frequently Bought Together" / bundle-builder feature for a
-gummies & sports-nutrition Shopify store, built with Shopify Liquid +
-Sections, vanilla JavaScript (ES6+), the Shopify AJAX Cart API, and
-a small Node.js/Express backend that calls Google Gemini and matches
-the AI's suggestions against the store's real, in-stock product catalog.
+# 🚀 Shopify AI Bundle Builder
+
+<p align="center">
+  <b>AI-powered Frequently Bought Together & Smart Bundle Recommendation System for Shopify Stores</b>
+</p>
+
+<p align="center">
+  Built with Shopify Liquid, JavaScript (ES6+), Shopify AJAX Cart API, Node.js, Express, and Google Gemini AI.
+</p>
+
 ---
-📌 What it does
-On a product page, the AI Recommended Bundle section:
-Sends the viewed product's title/type/tags/description to the backend.
-The backend asks Gemini for complementary product ideas
-(e.g. Mass Gainer → Whey Protein, Creatine, Shaker Bottle, Multivitamin).
-The backend matches those ideas against the store's real Shopify
-catalog (via the Storefront API) so only products that actually exist
-and are in stock are ever shown.
-The theme renders the matched products as cards (image, title, price,
-AI reason) with Add to Cart buttons, plus an Add Entire Bundle to
-Cart button that adds everything via the AJAX Cart API in one request.
-If nothing can be matched, the section falls back to a merchant-chosen
-collection (or a friendly message) instead of showing nothing.
+
+## ✨ Overview
+
+**Shopify AI Bundle Builder** is an intelligent product recommendation system designed for **sports nutrition and supplement stores**.
+
+It creates personalized bundles by analyzing the customer's currently viewed product and suggesting relevant complementary products using **Google Gemini AI**.
+
+Unlike simple recommendation systems, this solution verifies AI suggestions against the store's **real Shopify catalog**, ensuring customers only see products that actually exist and are available.
+
 ---
-🏗️ Project structure
+
+# 🎯 Key Features
+
+## 🤖 AI-Powered Recommendations
+
+* Sends product information to Gemini AI:
+
+  * Product title
+  * Product type
+  * Tags
+  * Description
+
+* Generates complementary product suggestions.
+
+Example:
+
+**Mass Gainer →**
+
+* Whey Protein
+* Creatine
+* Multivitamin
+* Pre-Workout
+
+---
+
+## 🛒 Smart Bundle Builder
+
+Customers can:
+
+✅ View AI recommended products
+✅ Add individual products to cart
+✅ Add the complete bundle with one click
+✅ See product images, prices, and AI reasoning
+
+---
+
+## 🔍 Real Shopify Product Matching
+
+AI never displays fake products.
+
+The backend:
+
+1. Gets AI recommendations
+2. Fetches the Shopify catalog
+3. Matches suggestions with real products
+4. Checks product availability
+5. Returns only valid products
+
+---
+
+# 🏗️ Architecture
+
+```
+Customer Product Page
+          |
+          ↓
+Shopify Liquid Section
+          |
+          ↓
+JavaScript Recommendation Engine
+          |
+          ↓
+Node.js + Express API
+          |
+          ↓
+Google Gemini AI
+          |
+          ↓
+Shopify Storefront API Matching
+          |
+          ↓
+AI Bundle Display + Cart
+```
+
+---
+
+# 📂 Project Structure
+
 ```
 shopify-ai-bundle-builder/
-├── server/                         # Backend (Node.js + Express + Gemini)
-│   ├── controllers/aiController.js #   Orchestrates Gemini + Shopify matching + caching
-│   ├── services/geminiService.js   #   Gemini prompt + response parsing
-│   ├── services/shopifyService.js  #   Storefront API catalog fetch + matching
-│   ├── routes/aiRoutes.js          #   /api/ai/* routes + rate limiting
-│   ├── server.js                   #   Express app entrypoint
-│   ├── .env.example                #   Required environment variables
+
+│
+├── server/
+│
+│   ├── controllers/
+│   │      └── aiController.js
+│   │
+│   ├── services/
+│   │      ├── geminiService.js
+│   │      └── shopifyService.js
+│   │
+│   ├── routes/
+│   │      └── aiRoutes.js
+│   │
+│   ├── server.js
+│   ├── .env.example
 │   └── package.json
 │
-├── shopify-theme/                  # Full Dawn-based theme with the feature wired in
-│   ├── sections/ai-recommended-bundle.liquid   # The section (settings + markup)
-│   ├── snippets/skeleton-loader.liquid         # Loading placeholder cards
-│   ├── snippets/toast.liquid                   # Add-to-cart toast container
-│   ├── assets/bundle.css                       # Section styles
-│   ├── assets/bundle-api.js                    # Backend API client (fetch + timeout)
-│   ├── assets/ai-bundle.js                     # Fetches + renders recommendations
-│   ├── assets/bundle-cart.js                   # AJAX Cart API (single + bundle add)
-│   ├── assets/analytics.js                     # Impression / click / add-to-cart tracking
-│   └── templates/product.json                  # Section wired into the product page
 │
-├── package.json                    # `npm run tunnel` helper (ngrok) for local dev
+├── shopify-theme/
+│
+│   ├── sections/
+│   │      └── ai-recommended-bundle.liquid
+│   │
+│   ├── assets/
+│   │      ├── ai-bundle.js
+│   │      ├── bundle-cart.js
+│   │      ├── bundle-api.js
+│   │      ├── bundle.css
+│   │      └── analytics.js
+│   │
+│   ├── snippets/
+│   │      ├── skeleton-loader.liquid
+│   │      └── toast.liquid
+│   │
+│   └── templates/
+│          └── product.json
+│
 └── README.md
 ```
+
 ---
-⚙️ Setup instructions
-1. Backend
+
+# ⚙️ Installation & Setup
+
+## 1. Backend Setup
+
 ```bash
 cd server
+
 npm install
+
 cp .env.example .env
 ```
-Fill in `.env`:
-Variable	Description
-`PORT`	Port to run the server on (default `3000`)
-`ALLOWED_ORIGINS`	Comma-separated storefront origins allowed to call the API, or `*` for local dev
-`GEMINI_API_KEY`	Your Google Gemini API key
-`SHOPIFY_STORE_DOMAIN`	e.g. `your-store.myshopify.com`
-`SHOPIFY_STOREFRONT_ACCESS_TOKEN`	Storefront API token (create a custom app in Shopify Admin → Apps → Develop apps, and enable Storefront API access)
-`SHOPIFY_API_VERSION`	Defaults to `2024-10`
-`CATALOG_CACHE_TTL` / `RECOMMENDATION_CACHE_TTL`	Cache lifetimes in seconds
-`RATE_LIMIT_PER_MINUTE`	Requests/minute allowed per IP on the recommendations endpoint
-Run it:
-```bash
-npm run dev     # nodemon, auto-restarts
-# or
-npm start
+
+Configure `.env`:
+
+```env
+PORT=3000
+
+SHOPIFY_STORE_DOMAIN=your-store.myshopify.com
+
+SHOPIFY_STOREFRONT_ACCESS_TOKEN=your_token
+
+GEMINI_API_KEY=your_gemini_key
+
+SHOPIFY_API_VERSION=2024-10
 ```
-Expose it to the internet for your dev store (Shopify can't reach
-`localhost`):
+
+Run:
+
 ```bash
-cd ..
-npm install
-npm run tunnel   # starts `ngrok http 3000`
+npm run dev
 ```
-Copy the `https://xxxx.ngrok-free.app` URL it prints.
-2. Theme
+
+---
+
+## 2. Create Public Backend URL
+
+Shopify cannot access localhost directly.
+
+Start ngrok:
+
+```bash
+npm run tunnel
+```
+
+Example:
+
+```
+https://example.ngrok-free.app
+```
+
+Use this URL inside Shopify Theme Settings.
+
+---
+
+# 🎨 Shopify Theme Setup
+
+Start theme:
+
 ```bash
 cd shopify-theme
+
 shopify theme dev --store your-store.myshopify.com
 ```
-In the Theme Editor, open a product page, select the "AI Recommended
-Bundle" section (already added to the product template) and set:
-AI backend URL → the ngrok URL from step 1 (no trailing slash)
-Section title, Number of recommendations (3–5), and a Fallback
-collection to show if no AI match is found
-Enable/disable the section entirely with the Enable checkbox
-Push the theme when you're ready:
-```bash
-shopify theme push
+
+In Shopify Theme Editor:
+
+Enable:
+
+✅ AI Recommended Bundle Section
+
+Configure:
+
+* Backend URL
+* Section title
+* Recommendation count
+* Fallback collection
+
+---
+
+# 🧠 AI Recommendation Workflow
+
 ```
----
-🧠 AI integration workflow
+Product Page Loads
+
+        ↓
+
+Frontend collects product data
+
+        ↓
+
+POST /api/ai/recommendations
+
+        ↓
+
+Gemini generates suggestions
+
+        ↓
+
+Shopify catalog matching
+
+        ↓
+
+Available products returned
+
+        ↓
+
+Bundle cards rendered
+
+        ↓
+
+AJAX Cart API adds products
+
 ```
-Product page loads
-   │
-   ▼
-ai-bundle.js reads product data attributes (title, type, tags, description)
-   │
-   ▼
-POST {backend}/api/ai/recommendations  { productId, title, type, tags, ... }
-   │
-   ▼
-aiController.js
-   ├─ checks in-memory response cache (per product+count, ~15 min TTL)
-   ├─ geminiService.js → Gemini returns generic suggestions
-   │      { reason, bundle: [{ name, category, reason }, ...] }
-   ├─ shopifyService.js → fetches/caches store catalog (Storefront API, ~10 min TTL)
-   │      and scores each suggestion against real product titles/types/tags
-   └─ returns only in-stock, real Shopify products (image, price, variantId)
-        or { fallback: true } if nothing matched
-   │
-   ▼
-ai-bundle.js renders cards / fallback message, caches the result in
-sessionStorage for the rest of the browsing session
-   │
-   ▼
-bundle-cart.js adds single items or the entire bundle via /cart/add.js
+
+---
+
+# 🚀 Performance & Reliability
+
+Implemented:
+
+✅ Backend caching
+✅ Client session caching
+✅ API timeout handling
+✅ Rate limiting
+✅ Loading skeletons
+✅ Error states
+✅ No jQuery dependency
+✅ Deferred JavaScript loading
+
+---
+
+# 🛍️ Cart Integration
+
+Uses Shopify AJAX Cart API:
+
 ```
+/cart/add.js
+```
+
+Supports:
+
+* Single product add
+* Complete bundle add
+* Multiple line items in one request
+
 ---
-✅ Requirements coverage
-Liquid & Sections – dedicated section with theme-editor settings
-(enable, title, count, fallback collection, backend URL).
-JavaScript (ES6+) – classes, `async/await`, `fetch`, `AbortController`,
-custom events, no jQuery.
-AJAX Cart API – `/cart/add.js` for both single items and the full
-bundle (one request with multiple line items).
-AI integration – Gemini generates ideas; ideas are matched to real
-products server-side (never invented/fake products shown to shoppers).
-Loading states – skeleton cards, never a blank section.
-Error handling – network/API/timeout/empty-response/product-not-found
-all show a friendly message instead of breaking the page.
-Performance – server-side response + catalog caching (`node-cache`),
-client-side `sessionStorage` caching, `defer`-loaded scripts, request
-timeouts, rate limiting.
-Bonus – basic recommendation analytics events (`analytics.js`),
-and a fallback-collection setting for when no match is found.
+
+# 📊 Analytics
+
+Includes basic tracking:
+
+* Recommendation impressions
+* Product clicks
+* Add-to-cart events
+
+Events are logged through:
+
+```
+window.dataLayer
+```
+
 ---
-📝 Assumptions made
-No public Shopify App / OAuth flow was built for this 24-hour scope; the
-backend is a standalone Node service the storefront calls directly (CORS
-enabled, tunneled via ngrok for local dev). A production version would
-move this behind a Shopify App Proxy so no public backend URL is
-exposed in theme settings — noted as the natural next step.
-Product matching uses lightweight token-overlap scoring against the
-Storefront API catalog rather than a vector/embedding search, which is
-fast, dependency-free, and accurate enough for a curated set of store
-categories (Mass Gainers, Whey Protein, Creatine, etc.).
-"Recommendation Analytics" (bonus) logs structured events to
-`window.dataLayer`/console rather than shipping a full analytics backend.
-Money is formatted client-side via `Intl.NumberFormat` using the
-currency returned by the Storefront API, so it works regardless of the
-shop's locale.
+
+# 🎥 Demo Flow
+
+The demo shows:
+
+### 1. Product Page
+
+Customer opens a product:
+
+Example:
+
+```
+Whey Protein
+```
+
+↓
+
+### 2. AI Bundle Generation
+
+AI suggests:
+
+```
+Creatine
+Mass Gainer
+Pre Workout
+Multivitamin
+```
+
+↓
+
+### 3. Add Bundle
+
+All products are added together using AJAX Cart API.
+
 ---
-🎥 Demo video checklist
-Product page → scroll to AI Recommended Bundle → skeleton loader → real recommendations appear.
-Add a single product from the bundle → cart updates, toast confirms.
-Add the entire bundle → all items added in one cart request.
-Theme editor → change section title / recommendation count / fallback collection live.
-Quick code walkthrough: `sections/ai-recommended-bundle.liquid` → `ai-bundle.js` → `server/controllers/aiController.js` → `shopifyService.js` matching logic.
+
+# 📸 Screenshots
+
+## AI Recommendation Section
+
+![AI Bundle](IMAGE_URL)
+
+## Product Matching
+
+![Matching](IMAGE_URL)
+
+## Bundle Cart
+
+![Cart](IMAGE_URL)
+
+---
+
+# 🔮 Future Improvements
+
+Production version can include:
+
+* Shopify App Proxy integration
+* Vector embeddings for smarter matching
+* Customer purchase history analysis
+* Advanced analytics dashboard
+* Personalized recommendations
+
+---
+
+# 👨‍💻 Tech Stack
+
+| Technology             | Purpose               |
+| ---------------------- | --------------------- |
+| Shopify Liquid         | Storefront UI         |
+| JavaScript ES6+        | Frontend logic        |
+| Node.js                | Backend               |
+| Express                | API server            |
+| Google Gemini AI       | Recommendation engine |
+| Shopify Storefront API | Product data          |
+| AJAX Cart API          | Bundle checkout       |
+
+---
+
+## ⭐ Project Goal
+
+Increase Shopify store conversions by automatically creating intelligent product bundles and improving average order value through AI-powered recommendations.
+
 
 <img width="1341" height="587" alt="image" src="https://github.com/user-attachments/assets/2a8a366d-e95e-422a-929f-6e3e4c7ac939" />
 
