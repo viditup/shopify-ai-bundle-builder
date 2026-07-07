@@ -164,3 +164,6 @@ Quick code walkthrough: `sections/ai-recommended-bundle.liquid` → `ai-bundle.j
 
 <img width="1341" height="587" alt="image" src="https://github.com/user-attachments/assets/2a8a366d-e95e-422a-929f-6e3e4c7ac939" />
 
+<img width="1000" height="444" alt="Screenshot 2026-07-07 113858" src="https://github.com/user-attachments/assets/f7efb71b-d6f1-4bb2-a540-a88f3d3c381a" />
+<img width="1365" height="482" alt="Screenshot 2026-07-07 113805" src="https://github.com/user-attachments/assets/97cc052d-c5ad-4ed1-b52f-01a70d86126c" />
+<img width="1365" height="500" alt="Screenshot 2026-07-07 113751" src="https://github.com/user-attachments/assets/a129f78f-8dde-4e70-ac63-81b4869d8c4f" />
